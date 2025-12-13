@@ -1,0 +1,110 @@
+TTMN SIGNATURE MODULE – KNOWLEDGE BASE DOCUMENT
+==============================================
+
+Document Name: TTMN_Signature_Module
+Purpose: Define exactly how TTMN Buddy Bot must generate, format, and deliver email signatures for users.
+
+------------------------------------------------
+1. CORE PURPOSE OF THIS MODULE
+------------------------------------------------
+
+This module teaches TTMN Buddy Bot how to:
+- Create professional, clean, copy-paste-ready email signatures.
+- Always provide:
+  1) A live HTML preview.
+  2) A downloadable HTML (.html) file.
+  3) The raw HTML code.
+  4) Instructions for adding the signature to major email platforms.
+
+
+------------------------------------------------
+2. REQUIRED SIGNATURE WORKFLOW (MANDATORY)
+------------------------------------------------
+
+For every signature request, TTMN Buddy Bot MUST output:
+
+1) LIVE PREVIEW  
+   Render the signature visually using HTML (NO code block).
+
+2) DOWNLOADABLE FILE  
+   Generate: signature_ttmn.html  
+   File must contain ONLY signature HTML.
+
+3) RAW HTML  
+   Provide full HTML in a clean code block.
+
+4) INSTRUCTIONS  
+   Short steps for Gmail, Yahoo, Outlook, Apple Mail.
+
+
+------------------------------------------------
+3. REQUIRED SIGNATURE FIELDS
+------------------------------------------------
+
+Include unless user removes:
+- Full Name
+- Title
+- Business / Brand
+- Phone (tel link)
+- Email (mailto link)
+- Website
+- Instagram/Social
+
+
+------------------------------------------------
+4. STYLE RULES
+------------------------------------------------
+
+- Use Arial or similar safe font.
+- Inline CSS only.
+- No markdown formatting.
+- No emojis unless requested.
+- No external fonts/scripts/gradients.
+
+
+------------------------------------------------
+5. HTML SIGNATURE TEMPLATE
+------------------------------------------------
+
+<div style="font-family: Arial, sans-serif; color:#111; line-height:1.4;">
+  <div style="font-size:16px; font-weight:bold;">[Full Name]</div>
+  <div style="font-size:14px;">[Title]</div>
+  <div style="font-size:14px; margin-top:6px;">[Business]</div>
+
+  <div style="margin-top:10px;">
+    <div>Phone: <a href="tel:[Phone]">[Phone]</a></div>
+    <div>Email: <a href="mailto:[Email]">[Email]</a></div>
+    <div>Website: <a href="[Website]" target="_blank">[Website]</a></div>
+    <div>Instagram: <a href="https://instagram.com/[Instagram]" target="_blank">@ [Instagram]</a></div>
+  </div>
+</div>
+
+
+------------------------------------------------
+6. HOW USERS APPLY THE SIGNATURE
+------------------------------------------------
+
+GMAIL:
+Settings → See All Settings → General → Signature → Paste
+
+YAHOO:
+Settings → More Settings → Writing Email → Signature → Paste
+
+OUTLOOK WEB:
+Settings → View All Settings → Mail → Compose and Reply → Paste
+
+APPLE MAIL:
+Mail → Settings → Signatures → Paste
+
+
+------------------------------------------------
+7. MANDATORY BEHAVIOR SUMMARY
+------------------------------------------------
+
+Every signature request MUST include:
+1) Live Preview  
+2) signature_ttmn.html downloadable file  
+3) Raw HTML block  
+4) Instructions  
+
+This file is the signature authority for the TTMN system.
