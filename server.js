@@ -97,7 +97,7 @@ app.post("/ttmn", async (req, res) => {
 // ========================================
 // HEALTH / TEST ENDPOINTS
 // ========================================
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
   res.send("TTMN Buddy Bot backend is running.");
 });
 
