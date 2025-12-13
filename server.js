@@ -1,3 +1,4 @@
+const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
@@ -13,21 +14,20 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // ========================================
 // TTMN SUPERBRAIN SYSTEM PROMPT
 // ========================================
-const SUPERBRAIN = fs.readFileSync(
-  "./knowledge/TTMN_Superbrain_Master.txt",
-  "utf8"
-);
 
-const POLICIES = fs.readFileSync(
-  "./knowledge/TTMN_Boundaries_and_Policies.txt",
-  "utf8"
-);
+// ========================================
+// LOAD ALL TTMN KNOWLEDGE FILES
+// ========================================
+const knowledgeDir = path.join(__dirname, "knowledge");
 
-const SYSTEM_PROMPT = `
-${SUPERBRAIN}
+const SYSTEM_PROMPT = fs
+  .readdirSync(knowledgeDir)
+  .filter(file => file.endsWith(".txt"))
+  .map(file => {
+    return fs.readFileSync(`${knowledgeDir}/${file}`, "utf8");
+  })
+  .join("\n\n");
 
-${POLICIES}
-`;
 app.post("/ttmn", async (req, res) => {
   try {
     const { message, history } = req.body;
