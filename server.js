@@ -166,6 +166,15 @@ app.post("/ttmn", async (req, res) => {
 // START SERVER
 // =========================
 const PORT = process.env.PORT || 3000;
+// Test Endpoint to confirm server + OpenAI connection
+app.get("/test-ttmn", async (req, res) => {
+  res.json({
+    status: "online",
+    message: "TTMN Buddy Bot backend is running",
+    endpoint: "/ttmn",
+    instructions: "POST to /ttmn with { message: 'your text' }"
+  });
+});
 app.listen(PORT, () => {
   console.log(`TTMN backend running on port ${PORT}`);
 });
