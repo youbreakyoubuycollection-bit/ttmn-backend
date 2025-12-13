@@ -13,10 +13,21 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // ========================================
 // TTMN SUPERBRAIN SYSTEM PROMPT
 // ========================================
-const SYSTEM_PROMPT = fs.readFileSync(
+const SUPERBRAIN = fs.readFileSync(
   "./knowledge/TTMN_Superbrain_Master.txt",
   "utf8"
 );
+
+const POLICIES = fs.readFileSync(
+  "./knowledge/TTMN_Boundaries_and_Policies.txt",
+  "utf8"
+);
+
+const SYSTEM_PROMPT = `
+${SUPERBRAIN}
+
+${POLICIES}
+`;
 app.post("/ttmn", async (req, res) => {
   try {
     const { message, history } = req.body;
