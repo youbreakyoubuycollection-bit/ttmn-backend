@@ -9,15 +9,17 @@
   const CLIENT_ID = document.currentScript.getAttribute("data-client");
 
 const iframe = document.createElement("iframe");
-iframe.src = `https://ttmn-backend.onrender.com?client=${CLIENT_ID || "demo"}`;
-  iframe.style = `
-    width: 350px;
-    height: 500px;
-    border: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-  `;
+
+iframe.src = `https://ttmn-backend.onrender.com/widget.html?client=${CLIENT_ID || "demo"}`;
+
+iframe.style = `
+  width: 350px;
+  height: 500px;
+  border: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+`;
   container.appendChild(iframe);
 })();
