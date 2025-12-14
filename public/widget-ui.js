@@ -33,3 +33,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const sendBtn = document.getElementById("ttmn-send");
+  const input = document.getElementById("ttmn-text");
+  const messages = document.getElementById("ttmn-messages");
+
+  if (!sendBtn || !input || !messages) return;
+
+  function addMessage(text, type = "user") {
+    const div = document.createElement("div");
+    div.className = type === "user" ? "ttmn-user" : "ttmn-bot";
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  sendBtn.addEventListener("click", async () => {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    addMessage("Thinking…", "bot");
+
+    try {
+      const res = await fetch("/ttmn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+
+      // Remove "Thinking…"
+      messages.lastChild.remove();
+
+      addMessage(data.reply || "No response yet.", "bot");
+    } catch (err) {
+      messages.lastChild.remove();
+      addMessage(
+        "I’m having trouble responding right now. Please try again shortly.",
+        "bot"
+      );
+    }
+  });
+});
