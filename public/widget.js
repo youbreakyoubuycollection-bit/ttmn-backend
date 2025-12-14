@@ -6,8 +6,10 @@
   container.id = "ttmn-widget";
   document.body.appendChild(container);
 
-  const iframe = document.createElement("iframe");
-  iframe.src = "https://ttmn-backend.onrender.com";
+  const CLIENT_ID = document.currentScript.getAttribute("data-client");
+
+const iframe = document.createElement("iframe");
+iframe.src = `https://ttmn-backend.onrender.com?client=${CLIENT_ID || "demo"}`;
   iframe.style = `
     width: 350px;
     height: 500px;
