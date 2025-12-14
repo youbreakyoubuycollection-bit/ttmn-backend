@@ -3,26 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <title>Talk To Me Nice</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="widget.css" />
+
+  <!-- Mobile-safe -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
 <body>
-  <div id="ttmn-container">
-    <h2>Talk To Me Nice</h2>
-    <p>Your communication assistant is ready.</p>
 
-    <textarea
-      id="ttmn-input"
-      placeholder="Type your message here..."
-    ></textarea>
+  <div class="ttmn-container">
+    <div class="ttmn-header">
+      Talk To Me Nice
+    </div>
 
-    <button id="ttmn-send">Send</button>
+    <div id="ttmn-messages">
+      <div class="ttmn-bot">
+        Hi 👋🏽 I’m your Talk To Me Nice assistant.  
+        How can I support you today?
+      </div>
+    </div>
 
-    <div id="ttmn-response">
-      <em>Responses will appear here.</em>
+    <div class="ttmn-input">
+      <input
+        id="ttmn-text"
+        type="text"
+        placeholder="Type your message…"
+      />
+      <button id="ttmn-send">Send</button>
     </div>
   </div>
 
-  <script src="widget-ui.js"></script>
+  <!-- JS -->
+  <script src="widget.js"></script>
+
 </body>
 </html>
