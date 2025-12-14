@@ -1,0 +1,10 @@
+{
+  "demo": {
+    "license": "DEMO-KEY",
+    "status": "active"
+  },
+  "ybybc": {
+    "license": "TTMN-YBYBC-2025",
+    "status": "active"
+  }
+}
