@@ -32,7 +32,13 @@ const SYSTEM_PROMPT = fs
 app.post("/ttmn", async (req, res) => {
   try {
     const { message, history } = req.body;
+const MAX_MESSAGE_LENGTH = 2000;
+let warning = "";
 
+if (message.length > MAX_MESSAGE_LENGTH) {
+  warning =
+    "⚠️ Heads up: Your message was quite long. It was processed, but for best results, shorter messages work better.";
+}
     if (!message || typeof message !== "string") {
       return res.status(400).json({ error: "Missing 'message' string in body." });
     }
@@ -62,36 +68,45 @@ app.post("/ttmn", async (req, res) => {
       content: message,
     });
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        temperature: 0.4,
-        messages,
-      }),
-    });
+    let reply = "";
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("OpenAI API error:", response.status, text);
-      return res.status(502).json({ error: "OpenAI API error", detail: text });
-    }
+try {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      temperature: 0.4,
+      messages,
+    }),
+  });
 
-    const data = await response.json();
-
-    const reply =
-      data?.choices?.[0]?.message?.content ||
-      "TTMN Buddy Bot did not generate a response.";
-
-    return res.json({ reply });
-  } catch (err) {
-    console.error("TTMN backend error:", err);
-    return res.status(500).json({ error: "Server Error" });
+  if (!response.ok) {
+    throw new Error(`OpenAI error: ${response.status}`);
   }
+
+  const data = await response.json();
+
+  reply =
+    data?.choices?.[0]?.message?.content ||
+    "TTMN Buddy Bot did not generate a response.";
+
+  return res.json({
+    reply,
+    warning: warning || null,
+  });
+
+} catch (err) {
+  console.error("TTMN backend error:", err);
+  
+  return res.json({
+    reply: "TTMN is temporarily unavailable due to high demand. Please try again shortly.",
+    warning: warning || null,
+  });
+}
 });
 
 // ========================================
