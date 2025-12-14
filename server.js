@@ -12,122 +12,84 @@ app.use(express.static("public"));
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-// ========================================
-// TTMN SUPERBRAIN SYSTEM PROMPT
-// ========================================
-
-// ========================================
-// LOAD ALL TTMN KNOWLEDGE FILES
-// ========================================
+// ================================
+// LOAD TTMN KNOWLEDGE FILES
+// ================================
 const knowledgeDir = path.join(__dirname, "knowledge");
 
-const SYSTEM_PROMPT = fs
-  .readdirSync(knowledgeDir)
-  .filter(file => file.endsWith(".txt"))
-  .map(file => {
-    return fs.readFileSync(`${knowledgeDir}/${file}`, "utf8");
-  })
-  .join("\n\n");
-
-app.post("/ttmn", async (req, res) => {
-  try {
-    const { message, history } = req.body;
-const MAX_MESSAGE_LENGTH = 2000;
-let warning = "";
-
-if (message.length > MAX_MESSAGE_LENGTH) {
-  warning =
-    "⚠️ Heads up: Your message was quite long. It was processed, but for best results, shorter messages work better.";
-}
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Missing 'message' string in body." });
-    }
-
-    const messages = [];
-
-    // System Superbrain first
-    messages.push({
-      role: "system",
-      content: SYSTEM_PROMPT,
-    });
-
-    // Optional chat history (if provided by frontend)
-    if (Array.isArray(history)) {
-      for (const m of history) {
-        if (!m.role || !m.content) continue;
-        messages.push({
-          role: m.role,
-          content: m.content,
-        });
-      }
-    }
-
-    // Latest user message
-    messages.push({
-      role: "user",
-      content: message,
-    });
-
-    let reply = "";
-
+let SYSTEM_PROMPT = "";
 try {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      temperature: 0.4,
-      messages,
-    }),
-  });
+  SYSTEM_PROMPT = fs
+    .readdirSync(knowledgeDir)
+    .filter(file => file.endsWith(".txt"))
+    .map(file => fs.readFileSync(path.join(knowledgeDir, file), "utf8"))
+    .join("\n\n");
+} catch (err) {
+  console.error("Failed to load knowledge files:", err);
+}
 
-  if (!response.ok) {
-    throw new Error(`OpenAI error: ${response.status}`);
+// ================================
+// MAIN API ENDPOINT
+// ================================
+app.post("/ttmn", async (req, res) => {
+  const { message, history } = req.body;
+
+  if (!message || typeof message !== "string") {
+    return res.status(400).json({
+      reply: "Please enter a message to continue."
+    });
   }
 
-  const data = await response.json();
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...(Array.isArray(history) ? history : []),
+    { role: "user", content: message }
+  ];
 
-  reply =
-    data?.choices?.[0]?.message?.content ||
-    "TTMN Buddy Bot did not generate a response.";
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        temperature: 0.4,
+        messages
+      })
+    });
 
-  return res.json({
-    reply,
-    warning: warning || null,
-  });
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
 
-} catch (err) {
-  console.error("TTMN backend error:", err);
-  
-  return res.json({
-    reply: "TTMN is temporarily unavailable due to high demand. Please try again shortly.",
-    warning: warning || null,
-  });
-}
+    const data = await response.json();
+
+    return res.json({
+      reply: data?.choices?.[0]?.message?.content || "No response generated."
+    });
+
+  } catch (err) {
+    console.error("OpenAI failure:", err.message);
+
+    return res.json({
+      reply:
+        "TTMN is temporarily unavailable due to high demand. Please try again shortly."
+    });
+  }
 });
 
-// ========================================
-// HEALTH / TEST ENDPOINTS
-// ========================================
+// ================================
+// HEALTH CHECK
+// ================================
 app.get("/health", (req, res) => {
-  res.send("TTMN Buddy Bot backend is running.");
+  res.send("TTMN backend is running.");
 });
 
-app.get("/test-ttmn", (req, res) => {
-  res.json({
-    status: "online",
-    message: "TTMN Buddy Bot backend is running",
-    endpoint: "/ttmn",
-    instructions: "POST { message: 'your text' }",
-  });
-});
-
-// ========================================
+// ================================
 // START SERVER
-// ========================================
+// ================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`TTMN backend running on port ${PORT}`);
