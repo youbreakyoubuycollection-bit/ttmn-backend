@@ -17,7 +17,7 @@
   // LOAD WIDGET UI
   const iframe = document.createElement("iframe");
   iframe.src =
-    `https://ttmn-backend.onrender.com/widget.html?client=${CLIENT_ID || "demo"}&license=${LICENSE_KEY || ""}`;
+    `https://ttmn.ybybcollection.com/widget.html?client=${CLIENT_ID || "demo"}&license=${LICENSE_KEY || ""}`;
 
   iframe.style = `
     width: 350px;
