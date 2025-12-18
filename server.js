@@ -56,7 +56,6 @@ function loadLicenses() {
     return {};
   }
 }
-
 app.post("/verify-license", (req, res) => {
   const { client, license } = req.body || {};
 
@@ -89,8 +88,7 @@ app.post("/stripe-webhook", express.raw({ type: "application/json" }), (req, res
   let event;
 
   try {
-    event = JSON.parse(req.body);
-  } catch (err) {
+event = JSON.parse(req.body.toString());  } catch (err) {
     return res.status(400).send("Invalid payload");
   }
 
