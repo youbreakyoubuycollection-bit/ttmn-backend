@@ -1,33 +1,48 @@
-(async function () {  
-  if (window.TTMN_WIDGET_LOADED) return;
-  window.TTMN_WIDGET_LOADED = true;
+(function () {
+  const sendBtn = document.getElementById("ttmn-send");
+  const input = document.getElementById("ttmn-text");
+  const messages = document.getElementById("ttmn-messages");
 
-  // READ BUYER DATA
-  const CLIENT_ID =
-    document.currentScript.getAttribute("data-client");
+  if (!sendBtn || !input || !messages) {
+    console.error("TTMN widget elements missing");
+    return;
+  }
 
-  const LICENSE_KEY =
-    document.currentScript.getAttribute("data-license");
+  function addMessage(text, type = "user") {
+    const div = document.createElement("div");
+    div.className = type === "user" ? "ttmn-user" : "ttmn-bot";
+    div.innerText = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
 
-  // CREATE CONTAINER
-  const container = document.createElement("div");
-  container.id = "ttmn-widget";
-  document.body.appendChild(container);
+  sendBtn.addEventListener("click", async () => {
+    const text = input.value.trim();
+    if (!text) return;
 
-  // LOAD WIDGET UI
-  const iframe = document.createElement("iframe");
-  iframe.src =
-    `https://ttmn.ybybcollection.com/widget.html?client=${CLIENT_ID || "demo"}&license=${LICENSE_KEY || ""}`;
+    addMessage(text, "user");
+    input.value = "";
 
-  iframe.style = `
-    width: 350px;
-    height: 500px;
-    border: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-  `;
+    try {
+      const res = await fetch("/ttmn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
 
-  container.appendChild(iframe);
+      const data = await res.json();
+      addMessage(data.reply || "…", "bot");
+
+    } catch (err) {
+      addMessage("⚠️ Unable to reach assistant.", "bot");
+      console.error(err);
+    }
+  });
+
+  // Optional: Enter key support
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      sendBtn.click();
+    }
+  });
 })();
