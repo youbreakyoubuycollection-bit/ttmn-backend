@@ -4,76 +4,79 @@
   <meta charset="UTF-8" />
   <title>Talk To Me Nice</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="widget.css" />
-
-  <!-- Mobile-safe -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 
 <body>
 
-  <div class="ttmn-container">
-    <div class="ttmn-header">
-      Talk To Me Nice
-    </div>
+  <!-- Loading State -->
+  <div id="loading">Loading Talk To Me Nice…</div>
 
-    <div id="ttmn-messages">
-      <div class="ttmn-bot">
-        Hi 👋🏽 I’m your Talk To Me Nice assistant.  
-        How can I support you today?
+  <!-- App (hidden until license verified) -->
+  <div id="app" style="display:none;">
+    <div class="ttmn-container">
+      <div class="ttmn-header">Talk To Me Nice</div>
+
+      <div id="ttmn-messages">
+        <div class="ttmn-bot">
+          Hi 👋🏽 I’m your Talk To Me Nice assistant.  
+          How can I support you today?
+        </div>
       </div>
-    </div>
 
-    <div class="ttmn-input">
-      <input
-        id="ttmn-text"
-        type="text"
-        placeholder="Type your message…"
-      />
-      <button id="ttmn-send">Send</button>
+      <div class="ttmn-input">
+        <input
+          id="ttmn-text"
+          type="text"
+          placeholder="Type your message…"
+        />
+        <button id="ttmn-send">Send</button>
+      </div>
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- License Check -->
   <script>
-  const params = new URLSearchParams(window.location.search);
-  const client = params.get("client");
-  const license = params.get("license");
+    const params = new URLSearchParams(window.location.search);
+    const client = params.get("client");
+    const license = params.get("license");
 
-  async function verifyLicense() {
-    if (!client || !license) {
-      document.getElementById("app").innerText =
-        "License missing. Please contact support.";
-      return false;
-    }
-
-    try {
-      const res = await fetch("/verify-license", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ client, license })
-      });
-
-      const data = await res.json();
-
-      if (!data.valid) {
-        document.getElementById("app").innerText =
-          "Invalid license. Access denied.";
-        return false;
+    async function verifyLicense() {
+      if (!client || !license) {
+        document.getElementById("loading").innerText =
+          "❌ License missing. Please contact support.";
+        return;
       }
 
-      return true;
-    } catch (e) {
-      document.getElementById("app").innerText =
-        "License server unavailable.";
-      return false;
-    }
-  }
+      try {
+        const res = await fetch("/verify-license", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client, license })
+        });
 
-  window.__TTMN_LICENSE_CHECK__ = verifyLicense;
-</script>
-  <script src="widget.js"></script>
+        const data = await res.json();
+
+        if (!data.valid) {
+          document.getElementById("loading").innerText =
+            "❌ Invalid or inactive license.";
+          return;
+        }
+
+        // License valid → show app
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+      } catch (err) {
+        document.getElementById("loading").innerText =
+          "⚠️ License server unavailable.";
+      }
+    }
+
+    verifyLicense();
+    window.__TTMN_LICENSE_CHECK__ = verifyLicense;
+  </script>
 
 </body>
 </html>
