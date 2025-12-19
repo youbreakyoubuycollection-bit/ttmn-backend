@@ -1,4 +1,4 @@
-(function () {
+(async function () {  
   if (window.TTMN_WIDGET_LOADED) return;
   window.TTMN_WIDGET_LOADED = true;
 
