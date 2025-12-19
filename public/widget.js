@@ -24,13 +24,19 @@
     input.value = "";
 
     try {
-const res = await fetch("https://ttmn.ybybcollection.com/ttmn", {      
-  method: "POST",
+      console.log("SEND CLICKED, MESSAGE:", text);
+      console.log("FETCHING /ttmn…");
+
+      const res = await fetch("https://ttmn.ybybcollection.com/ttmn", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text })
       });
 
       const data = await res.json();
+      console.log("BOT RESPONSE:", data);
+
+      // 🔥 THIS WAS MISSING
       addMessage(data.reply || "…", "bot");
 
     } catch (err) {
@@ -39,10 +45,7 @@ const res = await fetch("https://ttmn.ybybcollection.com/ttmn", {
     }
   });
 
-  // Optional: Enter key support
   input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      sendBtn.click();
-    }
+    if (e.key === "Enter") sendBtn.click();
   });
 })();
