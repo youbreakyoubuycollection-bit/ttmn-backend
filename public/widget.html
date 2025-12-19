@@ -36,6 +36,43 @@
   </div>
 
   <!-- JS -->
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const client = params.get("client");
+  const license = params.get("license");
+
+  async function verifyLicense() {
+    if (!client || !license) {
+      document.getElementById("app").innerText =
+        "License missing. Please contact support.";
+      return false;
+    }
+
+    try {
+      const res = await fetch("/verify-license", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client, license })
+      });
+
+      const data = await res.json();
+
+      if (!data.valid) {
+        document.getElementById("app").innerText =
+          "Invalid license. Access denied.";
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      document.getElementById("app").innerText =
+        "License server unavailable.";
+      return false;
+    }
+  }
+
+  window.__TTMN_LICENSE_CHECK__ = verifyLicense;
+</script>
   <script src="widget.js"></script>
 
 </body>
