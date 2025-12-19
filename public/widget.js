@@ -1,4 +1,4 @@
-(function () {
+(asyn function () {
   const sendBtn = document.getElementById("ttmn-send");
   const input = document.getElementById("ttmn-text");
   const messages = document.getElementById("ttmn-messages");
