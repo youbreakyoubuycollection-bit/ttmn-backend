@@ -1,4 +1,4 @@
-(asyn function () {
+(async function () {
   const sendBtn = document.getElementById("ttmn-send");
   const input = document.getElementById("ttmn-text");
   const messages = document.getElementById("ttmn-messages");
@@ -24,8 +24,8 @@
     input.value = "";
 
     try {
-      const res = await fetch("/ttmn", {
-        method: "POST",
+const res = await fetch("https://ttmn.ybybcollection.com/ttmn", {      
+  method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text })
       });
