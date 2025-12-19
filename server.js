@@ -57,6 +57,8 @@ function loadLicenses() {
   }
 }
 app.post("/verify-license", (req, res) => {
+  console.log("🔍 VERIFY LICENSE PAYLOAD:", req.body);
+  
   const { client, license } = req.body || {};
 
   if (!client || !license) {
