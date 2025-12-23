@@ -14,6 +14,7 @@ function generateLicense(client) {
   return `TTMN-${client.toUpperCase()}-${Date.now()}-${suffix}`;
 }
 
+
 const app = express();
 app.use(cors());
 app.use((req, res, next) => {
@@ -56,9 +57,13 @@ function loadLicenses() {
     return {};
   }
 }
+  
+// ================================
+// VERIFY LICENSE
+// ================================
 app.post("/verify-license", (req, res) => {
   console.log("🔍 VERIFY LICENSE PAYLOAD:", req.body);
-  
+
   const { client, license } = req.body || {};
 
   if (!client || !license) {
@@ -84,6 +89,34 @@ app.post("/verify-license", (req, res) => {
   }
 
   return res.json({ valid: true });
+});
+
+// ================================
+// CREATE LICENSE (WIX CALLS THIS)
+// ================================
+app.post("/create-license", (req, res) => {
+  const { email, client, orderId } = req.body || {};
+
+  if (!client || !email) {
+    return res.status(400).json({ error: "missing_client_or_email" });
+  }
+
+  const licenses = loadLicenses();
+  const licenseKey = generateLicense(client);
+
+  licenses[String(client).toLowerCase()] = {
+    license: licenseKey,
+    status: "active",
+    email,
+    orderId: orderId || null,
+    created: new Date().toISOString(),
+  };
+
+  fs.writeFileSync(LICENSES_PATH, JSON.stringify(licenses, null, 2));
+
+  console.log("✅ License created:", licenseKey, "for", email);
+
+  return res.json({ license: licenseKey });
 });
 
 app.post("/stripe-webhook", express.raw({ type: "application/json" }), (req, res) => {
@@ -119,6 +152,7 @@ event = JSON.parse(req.body.toString());  } catch (err) {
 
   res.json({ received: true });
 });
+
 // ================================
 // MAIN API ENDPOINT
 // ================================
