@@ -16,7 +16,7 @@
     messages.scrollTop = messages.scrollHeight;
   }
 
-  sendBtn.addEventListener("click", async () => {
+  async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
@@ -24,9 +24,6 @@
     input.value = "";
 
     try {
-      console.log("SEND CLICKED, MESSAGE:", text);
-      console.log("FETCHING /ttmn…");
-
       const res = await fetch("https://ttmn.ybybcollection.com/ttmn", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,18 +31,17 @@
       });
 
       const data = await res.json();
-      console.log("BOT RESPONSE:", data);
-
-      // 🔥 THIS WAS MISSING
       addMessage(data.reply || "…", "bot");
 
     } catch (err) {
-      addMessage("⚠️ Unable to reach assistant.", "bot");
       console.error(err);
+      addMessage("⚠️ Unable to reach assistant.", "bot");
     }
-  });
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
 
   input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") sendBtn.click();
+    if (e.key === "Enter") sendMessage();
   });
 })();
