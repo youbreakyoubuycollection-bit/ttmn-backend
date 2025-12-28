@@ -1,3 +1,4 @@
+const { sendLicenseEmail } = require("./email/sendLicenseEmail");
 const path = require("path");
 const fs = require("fs");
 const express = require("express");
@@ -94,7 +95,7 @@ app.post("/verify-license", (req, res) => {
 // ================================
 // CREATE LICENSE (WIX CALLS THIS)
 // ================================
-app.post("/create-license", (req, res) => {
+app.post("/create-license", async (req, res) => {
   const { email, client, orderId } = req.body || {};
 
   if (!client || !email) {
@@ -115,6 +116,12 @@ app.post("/create-license", (req, res) => {
   fs.writeFileSync(LICENSES_PATH, JSON.stringify(licenses, null, 2));
 
   console.log("✅ License created:", licenseKey, "for", email);
+  await sendLicenseEmail({
+  email: email,
+  license: licenseKey,
+  client: client,
+  orderId: orderId
+});
 
   return res.json({ license: licenseKey });
 });
