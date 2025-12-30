@@ -219,6 +219,20 @@ app.get("/health", (req, res) => {
   res.send("TTMN backend is running.");
 });
 
+app.get("/test-email", async (req, res) => {
+  try {
+    await sendLicenseEmail({
+      to: "marshae85@gmail.com",
+      licenseKey: "TEST-1234-ABCD",
+      client: "ybyb",
+      orderId: "ORDER-TEST"
+    });
+    res.send("Email sent (if Resend cooperated)");
+  } catch (err) {
+    console.error("EMAIL ERROR:", err);
+    res.status(500).send("Email failed");
+  }
+});
 // ================================
 // START SERVER
 // ================================
