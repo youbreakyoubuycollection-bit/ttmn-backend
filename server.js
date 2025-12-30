@@ -221,16 +221,30 @@ app.get("/health", (req, res) => {
 
 app.get("/test-email", async (req, res) => {
   try {
-    await sendLicenseEmail({
-      to: "marshae85@gmail.com",
-      licenseKey: "TEST-1234-ABCD",
+    const to = req.query.email || "Marshae85@gmail.com";
+
+    const result = await sendLicenseEmail({
+      email: to,
+      license: "TEST-LICENSE-123",
       client: "ybyb",
-      orderId: "ORDER-TEST"
+      orderId: "TEST-ORDER",
     });
-    res.send("Email sent (if Resend cooperated)");
+
+    // Resend returns an object like { id: "email_id" } on success
+    console.log("✅ RESEND RESULT:", result);
+
+    return res.json({
+      ok: true,
+      to,
+      resend: result,
+    });
   } catch (err) {
-    console.error("EMAIL ERROR:", err);
-    res.status(500).send("Email failed");
+    console.error("❌ RESEND ERROR:", err);
+
+    return res.status(500).json({
+      ok: false,
+      error: err?.message || String(err),
+    });
   }
 });
 // ================================
